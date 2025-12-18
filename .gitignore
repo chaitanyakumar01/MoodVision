@@ -1,0 +1,5 @@
+venv/
+fresh_env/
+anaconda_projects/
+__pycache__/
+.DS_Store
