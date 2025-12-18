@@ -1,4 +1,7 @@
 streamlit
 streamlit-webrtc
 deepface
-tf-keras
+opencv-python-headless==4.8.0.74
+tf-keras==2.15.0
+av
+numpy<2.0.0

@@ -1,5 +1,6 @@
 import cv2
 cv2.setNumThreads(0)
+
 import numpy as np
 from deepface import DeepFace
 import streamlit as st
@@ -7,6 +8,7 @@ from streamlit_webrtc import webrtc_streamer, VideoProcessorBase, RTCConfigurati
 import av
 import threading
 
+# ... (Baaki code same rahega) ...
 # -----------------------------------------------------------
 # 1. PAGE CONFIGURATION
 # -----------------------------------------------------------
