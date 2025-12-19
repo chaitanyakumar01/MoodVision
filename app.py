@@ -18,13 +18,10 @@ st.set_page_config(
 
 
 # Global variables for styling
-# Dark theme colors - trying a bluish-purple vibe
 BG_GRADIENT = "linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
 TEXT_COLOR = "white"
 ACCENT_COLOR = "#00C9FF"
 
-# Shared state to handle threading issues with webrtc
-# We need a lock otherwise streamlit messes up the context
 @st.cache_resource
 def get_shared_state():
     return {
@@ -34,16 +31,7 @@ def get_shared_state():
 
 state = get_shared_state()
 
-# -------------------------------------------------------------------
-# Custom CSS - This hides the ugly streamlit header and adds glassmorphism
-# TODO: Move this to a separate css file later? For now keeping it here.
-# -------------------------------------------------------------------
-# -------------------------------------------------------------------
-# Custom CSS - Updated to Hide Top Bar & Deploy Button
-# -------------------------------------------------------------------
-# -------------------------------------------------------------------
-# Custom CSS - Final Fix (Sidebar Visible + Deploy Hidden)
-# -------------------------------------------------------------------
+# Custom CSS 
 st.markdown(f"""
 <style>
     [data-testid="stHeader"] {{
@@ -137,19 +125,19 @@ st.markdown(f"""
 
 # Sidebar layout
 with st.sidebar:
-    # st.image("logo.png") # placeholder if we have one
+
     st.image("https://cdn-icons-png.flaticon.com/512/4712/4712035.png", width=50)
     st.title("Control Hub")
     st.markdown("---")
     
     st.markdown("### ⚡ Controls")
-    # Toggle for auto-refresh
+
     auto_update = st.checkbox("🟢 Live Sync", value=False)
     
-    # Reset button logic
+
     if st.button("🔄 Reset Data"):
         with state["lock"]:
-            # resetting all counters to zero
+
             for key in state["counts"]:
                 state["counts"][key] = 0
         st.rerun()
@@ -161,7 +149,6 @@ with st.sidebar:
 
 
 
-# Top Header Section (The cool gradient text)
 st.markdown("""
 <div class="navbar">
     <div style="display: flex; align-items: center; gap: 15px;">
@@ -180,7 +167,6 @@ st.markdown("""
 
 
 
-# Core Logic for Video Processing (Updated with Dynamic Colors)
 def video_frame_callback(frame):
     img = frame.to_ndarray(format="bgr24")
     
@@ -254,7 +240,7 @@ vibe_dict = {
 
 # Current vibe fetch 
 current_vibe = vibe_dict.get(dominant, "Unknown")
-kpi3.metric("Dominant Mood", current_vibe)
+kpi3.metric("Current Vibe", current_vibe)
 st.write("") # Spacer
 
 
@@ -268,10 +254,8 @@ col1, col2 = st.columns([2, 1])
 with col1:
     st.markdown("### 📷 Live Feed")
     
-    # --- Glass card START ---
    
     
-    # Ye raha aapka text, ab ye us chhote inner dibbe (capsule) ke andar aayega
     st.markdown("""
         <div style="background: rgba(255, 255, 255, 0.05); 
                     border-radius: 50px; 
@@ -307,16 +291,12 @@ with col1:
 with col2:
     st.markdown("### 📊 Analytics")
     
-    # Prepare data for plotting
     with state["lock"]:
-        # converting dict to dataframe for plotly
         df = pd.DataFrame(list(state["counts"].items()), columns=["Emotion", "Count"])
     
     if df["Count"].sum() > 0:
-        # Customizing the bar chart
         fig = px.bar(df, x="Emotion", y="Count", height=420)
         
-        # Plotly styling to match the dark theme
         fig.update_traces(marker_color='#00C9FF', opacity=0.8)
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
@@ -329,13 +309,11 @@ with col2:
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
-        # Placeholder when no data
         st.info("Start camera to see analytics...")
 
 
 
 
-# Auto-refresh logic
 if auto_update:
     time.sleep(1)
     st.rerun()
