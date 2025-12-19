@@ -8,10 +8,8 @@ from streamlit_webrtc import webrtc_streamer, VideoProcessorBase, RTCConfigurati
 import av
 import threading
 
-# ... (Baaki code same rahega) ...
-# -----------------------------------------------------------
-# 1. PAGE CONFIGURATION
-# -----------------------------------------------------------
+# PAGE CONFIGURATION
+
 st.set_page_config(page_title="MoodVision AI", page_icon="🎭", layout="wide")
 
 st.title("🎭 MoodVision: Real-Time Neural Sentiment Analysis")
@@ -25,9 +23,7 @@ st.markdown("""
 
 st.write("Wait for the camera to load, then click 'Start'. Allow browser permissions if asked.")
 
-# -----------------------------------------------------------
-# 2. EMOTION SETTINGS
-# -----------------------------------------------------------
+# EMOTION SETTINGS
 emotion_style = {
     'happy':    {'color': (0, 255, 255), 'emoji': 'Happy :)'},
     'sad':      {'color': (255, 0, 0),   'emoji': 'Sad :('},
@@ -38,9 +34,7 @@ emotion_style = {
     'disgust':  {'color': (0, 128, 255), 'emoji': 'Yuck XP'}
 }
 
-# -----------------------------------------------------------
-# 3. VIDEO PROCESSOR CLASS (The Brain)
-# -----------------------------------------------------------
+# VIDEO PROCESSOR CLASS (The Brain)
 class EmotionProcessor(VideoProcessorBase):
     def __init__(self):
         self.lock = threading.Lock()
@@ -53,8 +47,7 @@ class EmotionProcessor(VideoProcessorBase):
         img = cv2.flip(img, 1)
 
         try:
-            # DeepFace logic (Same as your local code)
-            # enforce_detection=False prevents crashes when no face is found
+            # DeepFace logic 
             analysis = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False, silent=True)
 
             for face in analysis:
@@ -73,21 +66,17 @@ class EmotionProcessor(VideoProcessorBase):
                     box_color = (255, 255, 255)
                     display_text = current_mood
 
-                # Drawing
+                # Drawing box
                 cv2.rectangle(img, (x, y), (x + w, y + h), box_color, 2)
                 cv2.putText(img, display_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 4)
                 cv2.putText(img, display_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, box_color, 2)
 
         except Exception as e:
-            # Pass silently to avoid cluttering logs
             pass
 
-        # Return the processed frame back to the browser
         return av.VideoFrame.from_ndarray(img, format="bgr24")
 
-# -----------------------------------------------------------
-# 4. WEBRTC STREAMER (The Camera Component)
-# -----------------------------------------------------------
+# WEBRTC STREAMER (The Camera Component)
 webrtc_streamer(
     key="moodvision",
     video_processor_factory=EmotionProcessor,
